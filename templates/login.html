@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="Login to the Phishing URL Detection and Risk Analysis Tool." />
+  <title>Login — Phishing URL Analyzer</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg:           #0b0d14;
+      --surface:      #12151f;
+      --card:         #171b27;
+      --border:       #242840;
+      --border-lit:   #3b4170;
+      --text:         #e2e6f3;
+      --muted:        #7b82a8;
+      --accent:       #6b7aff;
+      --accent-glow:  rgba(107,122,255,.25);
+      --danger:       #ef4444;
+      --danger-bg:    rgba(239,68,68,.1);
+      --radius:       14px;
+      --transition:   .2s ease;
+    }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 24px 16px;
+    }
+
+    /* Ambient glow */
+    body::before {
+      content: '';
+      position: fixed;
+      top: -160px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 700px;
+      height: 400px;
+      background: radial-gradient(ellipse, rgba(107,122,255,.15) 0%, transparent 70%);
+      pointer-events: none;
+    }
+
+    /* ── Card ─────────────────────────────────────────── */
+    .login-card {
+      position: relative;
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 40px 36px;
+      width: 100%;
+      max-width: 420px;
+      box-shadow: 0 8px 48px rgba(0,0,0,.45);
+      animation: fadeUp .4s ease;
+    }
+
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(20px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    /* ── Header ───────────────────────────────────────── */
+    .login-icon {
+      font-size: 2.4rem;
+      display: block;
+      text-align: center;
+      margin-bottom: 14px;
+      filter: drop-shadow(0 0 14px var(--accent-glow));
+      animation: float 3.5s ease-in-out infinite;
+    }
+
+    @keyframes float {
+      0%, 100% { transform: translateY(0); }
+      50%       { transform: translateY(-7px); }
+    }
+
+    h1 {
+      text-align: center;
+      font-size: 1.35rem;
+      font-weight: 700;
+      color: var(--text);
+      margin-bottom: 4px;
+    }
+
+    .subtitle {
+      text-align: center;
+      color: var(--muted);
+      font-size: .85rem;
+      margin-bottom: 28px;
+    }
+
+    /* ── Error banner ─────────────────────────────────── */
+    .error-banner {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      background: var(--danger-bg);
+      border: 1px solid rgba(239,68,68,.3);
+      border-radius: 8px;
+      padding: 11px 14px;
+      color: #fca5a5;
+      font-size: .85rem;
+      margin-bottom: 20px;
+      animation: shake .35s ease;
+    }
+
+    @keyframes shake {
+      0%, 100% { transform: translateX(0); }
+      25%       { transform: translateX(-6px); }
+      75%       { transform: translateX(6px); }
+    }
+
+    /* ── Form fields ──────────────────────────────────── */
+    .field {
+      margin-bottom: 16px;
+    }
+
+    label {
+      display: block;
+      font-size: .75rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: .08em;
+      color: var(--muted);
+      margin-bottom: 7px;
+    }
+
+    input[type="text"],
+    input[type="password"] {
+      width: 100%;
+      background: var(--surface);
+      border: 1.5px solid var(--border);
+      border-radius: 8px;
+      padding: 12px 14px;
+      color: var(--text);
+      font-family: 'Inter', sans-serif;
+      font-size: .9rem;
+      outline: none;
+      transition: border-color var(--transition), box-shadow var(--transition);
+    }
+
+    input[type="text"]::placeholder,
+    input[type="password"]::placeholder { color: var(--muted); }
+
+    input[type="text"]:focus,
+    input[type="password"]:focus {
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px var(--accent-glow);
+    }
+
+    /* ── Submit button ────────────────────────────────── */
+    .btn-login {
+      width: 100%;
+      margin-top: 8px;
+      padding: 13px;
+      background: var(--accent);
+      color: #fff;
+      border: none;
+      border-radius: 8px;
+      font-family: 'Inter', sans-serif;
+      font-size: .93rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background var(--transition), transform var(--transition), box-shadow var(--transition);
+    }
+
+    .btn-login:hover {
+      background: #8090ff;
+      box-shadow: 0 0 20px var(--accent-glow);
+      transform: translateY(-1px);
+    }
+
+    .btn-login:active { transform: translateY(0); }
+
+    /* ── Hint ─────────────────────────────────────────── */
+    .hint {
+      margin-top: 20px;
+      text-align: center;
+      font-size: .75rem;
+      color: var(--muted);
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 10px 14px;
+      line-height: 1.6;
+    }
+
+    .hint code {
+      color: var(--accent);
+      font-weight: 600;
+      font-family: monospace;
+    }
+
+    /* Divider line in card */
+    .divider {
+      border: none;
+      border-top: 1px solid var(--border);
+      margin: 24px 0;
+    }
+
+    .footer-note {
+      text-align: center;
+      color: var(--muted);
+      font-size: .72rem;
+      margin-top: 20px;
+    }
+  </style>
+</head>
+<body>
+
+<div class="login-card">
+
+  <span class="login-icon">🛡️</span>
+  <h1>Welcome Back</h1>
+  <p class="subtitle">Sign in to access the Phishing URL Analyzer</p>
+
+  <!-- Error message (shown only on failed login) -->
+  {% if error %}
+  <div class="error-banner" id="login-error">
+    ⚠️ {{ error }}
+  </div>
+  {% endif %}
+
+  <!-- Login Form -->
+  <form id="login-form" method="POST" action="/login">
+
+    <div class="field">
+      <label for="username">Username</label>
+      <input
+        id="username"
+        name="username"
+        type="text"
+        placeholder="Enter your username"
+        autocomplete="username"
+        required
+        autofocus
+      />
+    </div>
+
+    <div class="field">
+      <label for="password">Password</label>
+      <input
+        id="password"
+        name="password"
+        type="password"
+        placeholder="Enter your password"
+        autocomplete="current-password"
+        required
+      />
+    </div>
+
+    <button type="submit" class="btn-login" id="login-btn">
+      Login →
+    </button>
+
+  </form>
+
+  <hr class="divider" />
+
+  <!-- Demo credentials hint (useful for college demo) -->
+  <div class="hint">
+    🔑 Demo credentials &nbsp;—&nbsp;
+    Username: <code>admin</code> &nbsp;·&nbsp; Password: <code>password123</code>
+  </div>
+
+  <p class="footer-note">Phishing URL Analyzer — College Mini Project</p>
+
+</div>
+
+</body>
+</html>
