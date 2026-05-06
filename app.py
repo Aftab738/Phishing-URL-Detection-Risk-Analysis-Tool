@@ -86,56 +86,55 @@ def home():
 def analyze():
     """
     Analyze a URL for phishing indicators.
-
-    Expected request body (JSON):
-        { "url": "<the URL to check>" }
-
-    Returns JSON:
-        {
-            "original_url": str,
-            "expanded_url": str,
-            "score": int,        # 0–100
-            "status": str,       # "Safe" | "Suspicious" | "Dangerous" | "Invalid URL"
-            "reasons": [str]     # list of detected issues
-        }
     """
-    # ── Validate Content-Type ──────────────────────────────────────────────
-    if not request.is_json:
-        return jsonify({
-            "error": "Request must be JSON",
-            "hint": "Set Content-Type: application/json and send { \"url\": \"...\" }"
-        }), 415
+    try:
+        # ── Validate Content-Type ──────────────────────────────────────────────
+        if not request.is_json:
+            return jsonify({
+                "error": "Request must be JSON",
+                "hint": "Set Content-Type: application/json and send { \"url\": \"...\" }"
+            }), 415
 
-    data = request.get_json()
+        data = request.get_json()
 
-    # ── Validate Payload ───────────────────────────────────────────────────
-    if "url" not in data or not isinstance(data["url"], str):
-        return jsonify({
-            "error": "Missing or invalid 'url' field",
-            "hint": "Send { \"url\": \"https://example.com\" }"
-        }), 400
+        # ── Validate Payload ───────────────────────────────────────────────────
+        if not data or "url" not in data or not isinstance(data["url"], str):
+            return jsonify({
+                "error": "Missing or invalid 'url' field",
+                "hint": "Send { \"url\": \"https://example.com\" }"
+            }), 400
 
-    url = data["url"].strip()
+        url = data["url"].strip()
 
-    if not url:
-        return jsonify({
-            "error": "URL cannot be empty"
-        }), 400
+        if not url:
+            return jsonify({
+                "error": "URL cannot be empty"
+            }), 400
 
-    # ── Run Analysis (unchanged PhishingAnalyzer logic) ───────────────────
-    result = analyzer.analyze(url)
+        # Normalize URL (add scheme if missing)
+        if not url.startswith("http://") and not url.startswith("https://"):
+            url = "http://" + url
 
-    # ── Save to scan history (newest first, max 10 entries) ───────────────
-    history = session.get("history", [])
-    history.insert(0, {
-        "url":    result.get("original_url", url),
-        "status": result.get("status", "Safe"),
-        "score":  result.get("score", 0),
-    })
-    session["history"] = history[:10]   # keep last 10 only
-    session.modified = True             # tell Flask the session changed
+        app.logger.info(f"Received request to analyze URL: {url}")
 
-    return jsonify(result), 200
+        # ── Run Analysis (unchanged PhishingAnalyzer logic) ───────────────────
+        result = analyzer.analyze(url)
+
+        # ── Save to scan history (newest first, max 10 entries) ───────────────
+        history = session.get("history", [])
+        history.insert(0, {
+            "url":    result.get("original_url", url),
+            "status": result.get("status", "Safe"),
+            "score":  result.get("score", 0),
+        })
+        session["history"] = history[:10]   # keep last 10 only
+        session.modified = True             # tell Flask the session changed
+
+        return jsonify(result), 200
+
+    except Exception as e:
+        app.logger.error(f"Error analyzing URL: {str(e)}")
+        return jsonify({"error": str(e)}), 500
 
 
 @app.route("/history", methods=["GET"])

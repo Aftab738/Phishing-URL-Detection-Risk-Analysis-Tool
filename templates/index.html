@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-theme="dark">
 
 <head>
   <meta charset="UTF-8" />
@@ -11,8 +11,14 @@
   <!-- Google Font -->
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link
-    href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;600&display=swap"
+    href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap"
     rel="stylesheet" />
+
+  <script>
+    // Initialize theme to prevent flashing
+    const savedTheme = localStorage.getItem('theme') || 'dark';
+    document.documentElement.setAttribute('data-theme', savedTheme);
+  </script>
 
   <style>
     /* ── Reset & Tokens ─────────────────────────────────────── */
@@ -25,26 +31,72 @@
     }
 
     :root {
-      --bg: #0b0d14;
-      --surface: #12151f;
-      --card: #171b27;
-      --border: #242840;
-      --border-lit: #3b4170;
+      /* Dark Theme (Deep Navy + Indigo + Violet) */
+      --bg-gradient: linear-gradient(135deg, #090b14 0%, #0f152d 50%, #15112e 100%);
+      --ambient-glow: rgba(139, 92, 246, 0.15);
+      /* Violet glow */
+      --surface: rgba(15, 23, 42, 0.45);
+      --card: rgba(15, 23, 42, 0.55);
+      --border: rgba(255, 255, 255, 0.06);
+      --border-lit: rgba(139, 92, 246, 0.4);
 
-      --text: #e2e6f3;
-      --muted: #7b82a8;
-      --accent: #6b7aff;
-      --accent-glow: rgba(107, 122, 255, .25);
+      --text: #f8fafc;
+      --muted: #94a3b8;
 
-      --safe: #22c55e;
-      --safe-bg: rgba(34, 197, 94, .12);
+      --accent: #818cf8;
+      /* Light Indigo */
+      --accent-mid: #6366f1;
+      /* Indigo */
+      --accent-dark: #8b5cf6;
+      /* Violet */
+      --accent-glow: rgba(139, 92, 246, 0.4);
+
+      --safe: #10b981;
+      --safe-bg: rgba(16, 185, 129, 0.12);
       --warn: #f59e0b;
-      --warn-bg: rgba(245, 158, 11, .12);
-      --danger: #ef4444;
-      --danger-bg: rgba(239, 68, 68, .12);
+      --warn-bg: rgba(245, 158, 11, 0.12);
+      --danger: #f43f5e;
+      --danger-bg: rgba(244, 63, 94, 0.12);
 
-      --radius: 14px;
-      --transition: .2s ease;
+      --nav-bg: rgba(9, 11, 20, 0.7);
+      --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.2), 0 10px 15px -3px rgba(0, 0, 0, 0.2), 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+      --invalid-bg: rgba(139, 92, 246, 0.12);
+
+      --radius: 16px;
+      --transition: 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    [data-theme="light"] {
+      /* Light Theme (Soft bluish-white) */
+      --bg-gradient: linear-gradient(135deg, #f8fafc 0%, #eef2ff 35%, #e0e7ff 70%, #f1f5f9 100%);
+      --ambient-glow: rgba(99, 102, 241, 0.12);
+      --surface: rgba(255, 255, 255, 0.65);
+      --card: rgba(255, 255, 255, 0.75);
+      --border: rgba(99, 102, 241, 0.1);
+      --border-lit: rgba(99, 102, 241, 0.35);
+
+      --text: #0f172a;
+      --muted: #64748b;
+
+      --accent: #6366f1;
+      /* Indigo */
+      --accent-mid: #4f46e5;
+      --accent-dark: #7c3aed;
+      /* Violet */
+      --accent-alt: #3b82f6;
+      /* Soft blue */
+      --accent-glow: rgba(99, 102, 241, 0.25);
+
+      --safe: #059669;
+      --safe-bg: rgba(16, 185, 129, 0.12);
+      --warn: #d97706;
+      --warn-bg: rgba(245, 158, 11, 0.12);
+      --danger: #e11d48;
+      --danger-bg: rgba(225, 29, 72, 0.12);
+
+      --nav-bg: rgba(248, 250, 252, 0.75);
+      --shadow: 0 4px 6px -1px rgba(99, 102, 241, 0.05), 0 14px 24px -5px rgba(99, 102, 241, 0.08), 0 25px 50px -12px rgba(99, 102, 241, 0.15);
+      --invalid-bg: rgba(99, 102, 241, 0.12);
     }
 
     html {
@@ -53,27 +105,33 @@
 
     body {
       font-family: 'Inter', sans-serif;
-      background: var(--bg);
+      background: radial-gradient(circle at 50% 10%, var(--ambient-glow) 0%, transparent 60%), var(--bg-gradient);
+      background-attachment: fixed;
       color: var(--text);
       min-height: 100vh;
       display: flex;
       flex-direction: column;
       align-items: center;
-      padding: 48px 16px 80px;
+      padding: 120px 16px 80px;
+      transition: background var(--transition), color var(--transition);
+      position: relative;
     }
 
-    /* ── Ambient background glow ────────────────────────────── */
+    /* Grid Overlay */
     body::before {
-      content: '';
+      content: "";
       position: fixed;
-      top: -160px;
-      left: 50%;
-      transform: translateX(-50%);
-      width: 700px;
-      height: 400px;
-      background: radial-gradient(ellipse, rgba(107, 122, 255, .15) 0%, transparent 70%);
+      inset: 0;
       pointer-events: none;
+      background-image:
+        linear-gradient(var(--border) 1px, transparent 1px),
+        linear-gradient(90deg, var(--border) 1px, transparent 1px);
+      background-size: 40px 40px;
       z-index: 0;
+      opacity: 0.5;
+      mask-image: radial-gradient(circle at 50% 50%, black 20%, transparent 80%);
+      -webkit-mask-image: radial-gradient(circle at 50% 50%, black 20%, transparent 80%);
+      transition: opacity var(--transition);
     }
 
     /* ── Layout ─────────────────────────────────────────────── */
@@ -84,92 +142,158 @@
       max-width: 680px;
       display: flex;
       flex-direction: column;
-      gap: 24px;
+      gap: 32px;
     }
 
     /* ── Header ─────────────────────────────────────────────── */
     header {
       text-align: center;
-      padding: 8px 0 4px;
+      padding: 8px 0 16px;
     }
 
     .shield-icon {
-      font-size: 2.8rem;
-      line-height: 1;
-      margin-bottom: 14px;
+      width: 64px;
+      height: 64px;
+      margin: 0 auto 20px;
       display: block;
-      filter: drop-shadow(0 0 18px var(--accent-glow));
-      animation: float 3.5s ease-in-out infinite;
+      filter: drop-shadow(0 8px 24px var(--accent-glow));
+      animation: floatPulse 4s ease-in-out infinite;
     }
 
-    @keyframes float {
+    @keyframes floatPulse {
 
       0%,
       100% {
-        transform: translateY(0);
+        transform: translateY(0) scale(1);
+        filter: drop-shadow(0 8px 24px var(--accent-glow));
       }
 
       50% {
-        transform: translateY(-7px);
+        transform: translateY(-8px) scale(1.05);
+        filter: drop-shadow(0 12px 32px var(--accent-glow));
       }
     }
 
     h1 {
-      font-size: clamp(1.35rem, 4vw, 1.75rem);
-      font-weight: 700;
-      letter-spacing: -.02em;
+      font-size: clamp(1.6rem, 4.5vw, 2.2rem);
+      font-weight: 800;
+      letter-spacing: -.03em;
       color: var(--text);
       line-height: 1.2;
-      margin-bottom: 10px;
+      margin-bottom: 16px;
+      transition: color var(--transition);
     }
 
     h1 span {
-      color: var(--accent);
+      background: linear-gradient(135deg, var(--accent-mid), var(--accent-dark), #3b82f6);
+
+      -webkit-background-clip: text;
+      background-clip: text;
+
+      -webkit-text-fill-color: transparent;
+      color: transparent;
+
+      background-size: 200% auto;
+    }
+
+    [data-theme="light"] h1 span {
+      background: linear-gradient(135deg,
+          var(--accent-mid),
+          var(--accent-dark),
+          var(--accent-alt));
+
+      -webkit-background-clip: text;
+      background-clip: text;
+
+      -webkit-text-fill-color: transparent;
+      color: transparent;
+
+      background-size: 200% auto;
     }
 
     .desc {
       color: var(--muted);
-      font-size: .93rem;
-      line-height: 1.65;
-      max-width: 480px;
+      font-size: 1rem;
+      line-height: 1.7;
+      max-width: 520px;
       margin: 0 auto;
+      font-weight: 500;
+      transition: color var(--transition);
     }
 
-    /* ── Input Card ─────────────────────────────────────────── */
+    /* ── Cards & Glassmorphism ──────────────────────────────── */
     .card {
       background: var(--card);
+      backdrop-filter: blur(24px);
+      -webkit-backdrop-filter: blur(24px);
       border: 1px solid var(--border);
       border-radius: var(--radius);
-      padding: 28px;
-      box-shadow: 0 4px 40px rgba(0, 0, 0, .35);
+      padding: 36px;
+      box-shadow: var(--shadow);
+      transition: all var(--transition);
+      position: relative;
+      overflow: hidden;
     }
 
+    .card::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      border-radius: var(--radius);
+      box-shadow: inset 0 1px 1px rgba(255, 255, 255, 0.05);
+      pointer-events: none;
+    }
+
+    .card:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 20px 48px var(--ambient-glow), var(--shadow);
+      border-color: var(--border-lit);
+    }
+
+    /* ── Input Area ─────────────────────────────────────────── */
     .input-label {
-      display: block;
-      font-size: .78rem;
-      font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: .8rem;
+      font-weight: 700;
       letter-spacing: .08em;
       text-transform: uppercase;
+      color: var(--text);
+      margin-bottom: 16px;
+      transition: color var(--transition);
+    }
+
+    .input-label svg {
+      width: 16px;
+      height: 16px;
       color: var(--muted);
-      margin-bottom: 10px;
     }
 
     .input-row {
       display: flex;
-      gap: 10px;
+      gap: 12px;
+      position: relative;
     }
 
     #url-input {
       flex: 1;
-      background: var(--surface);
+      background: rgba(0, 0, 0, 0.15);
       border: 1.5px solid var(--border);
-      border-radius: 8px;
-      padding: 12px 16px;
+      border-radius: 12px;
+      padding: 16px 20px;
       color: var(--text);
       font-family: 'JetBrains Mono', monospace;
-      font-size: .875rem;
+      font-size: 1rem;
+      font-weight: 500;
       outline: none;
-      transition: border-color var(--transition), box-shadow var(--transition);
+      transition: all var(--transition);
+      box-shadow: inset 0 2px 6px rgba(0, 0, 0, 0.1);
+    }
+
+    [data-theme="light"] #url-input {
+      background: rgba(255, 255, 255, 0.5);
+      box-shadow: inset 0 2px 6px rgba(15, 23, 42, 0.04);
     }
 
     #url-input::placeholder {
@@ -177,50 +301,75 @@
     }
 
     #url-input:focus {
-      border-color: var(--accent);
-      box-shadow: 0 0 0 3px var(--accent-glow);
+      border-color: var(--accent-mid);
+      box-shadow: 0 0 0 4px var(--accent-glow), inset 0 2px 6px rgba(0, 0, 0, 0.1);
+      background: var(--surface);
     }
 
     #analyze-btn {
-      background: var(--accent);
-      color: #fff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      background: linear-gradient(135deg, var(--accent-mid), var(--accent-dark), var(--accent-alt, #3b82f6));
+      background-size: 200% auto;
+      background-position: left center;
+      color: #ffffff !important;
       border: none;
-      border-radius: 8px;
-      padding: 12px 22px;
+      border-radius: 12px;
+      padding: 0 32px;
       font-family: 'Inter', sans-serif;
-      font-size: .875rem;
-      font-weight: 600;
+      font-size: 1.05rem;
+      font-weight: 700;
       cursor: pointer;
       white-space: nowrap;
-      transition: background var(--transition), transform var(--transition), box-shadow var(--transition);
+      box-shadow: 0 4px 14px var(--accent-glow), inset 0 1px 1px rgba(255, 255, 255, 0.2);
+      transition: all 0.3s ease;
       position: relative;
+      overflow: hidden;
+    }
+
+    #analyze-btn::after {
+      content: "";
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 50%;
+      height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+      transform: skewX(-20deg);
+      transition: all 0.5s ease;
     }
 
     #analyze-btn:hover:not(:disabled) {
-      background: #8090ff;
-      box-shadow: 0 0 18px var(--accent-glow);
-      transform: translateY(-1px);
+      background-position: right center;
+      box-shadow: 0 12px 28px var(--accent-glow), 0 0 15px var(--accent-glow), inset 0 1px 1px rgba(255, 255, 255, 0.3);
+      transform: translateY(-3px);
+    }
+
+    #analyze-btn:hover:not(:disabled)::after {
+      left: 200%;
     }
 
     #analyze-btn:active:not(:disabled) {
-      transform: translateY(0);
+      transform: translateY(0) scale(0.98);
     }
 
     #analyze-btn:disabled {
-      opacity: .6;
+      opacity: .7;
       cursor: not-allowed;
+      transform: none;
     }
 
     /* Loading spinner inside button */
     .spinner {
       display: none;
-      width: 14px;
-      height: 14px;
-      border: 2px solid rgba(255, 255, 255, .35);
+      width: 18px;
+      height: 18px;
+      border: 2px solid rgba(255, 255, 255, .3);
       border-top-color: #fff;
       border-radius: 50%;
       animation: spin .7s linear infinite;
-      margin-right: 8px;
     }
 
     @keyframes spin {
@@ -233,20 +382,21 @@
       display: inline-block;
     }
 
-    #analyze-btn.loading .btn-text {
+    #analyze-btn.loading .btn-text,
+    #analyze-btn.loading svg {
       display: none;
     }
 
     /* ── Result Card ────────────────────────────────────────── */
     #result-card {
       display: none;
-      animation: slideUp .35s ease;
+      animation: slideUp .5s cubic-bezier(0.16, 1, 0.3, 1);
     }
 
     @keyframes slideUp {
       from {
         opacity: 0;
-        transform: translateY(16px);
+        transform: translateY(30px);
       }
 
       to {
@@ -259,120 +409,107 @@
       display: flex;
       align-items: center;
       gap: 14px;
-      margin-bottom: 20px;
+      margin-bottom: 28px;
     }
 
     .status-badge {
-      display: flex;
+      display: inline-flex;
       align-items: center;
-      gap: 8px;
-      padding: 8px 18px;
+      gap: 10px;
+      padding: 10px 24px;
       border-radius: 100px;
       font-weight: 700;
-      font-size: .95rem;
-      letter-spacing: .01em;
+      font-size: 1.05rem;
+      letter-spacing: .02em;
+      box-shadow: inset 0 1px 1px rgba(255, 255, 255, 0.1);
+      transition: all var(--transition);
     }
 
-    .status-dot {
-      width: 9px;
-      height: 9px;
-      border-radius: 50%;
+    .status-icon {
+      width: 18px;
+      height: 18px;
       flex-shrink: 0;
     }
 
     .badge-safe {
       background: var(--safe-bg);
       color: var(--safe);
-      border: 1px solid rgba(34, 197, 94, .3);
+      border: 1px solid rgba(16, 185, 129, 0.2);
     }
 
     .badge-warn {
       background: var(--warn-bg);
       color: var(--warn);
-      border: 1px solid rgba(245, 158, 11, .3);
+      border: 1px solid rgba(245, 158, 11, 0.2);
     }
 
     .badge-danger {
       background: var(--danger-bg);
       color: var(--danger);
-      border: 1px solid rgba(239, 68, 68, .3);
+      border: 1px solid rgba(244, 63, 94, 0.3);
+      box-shadow: 0 0 20px rgba(244, 63, 94, 0.15), inset 0 1px 1px rgba(255, 255, 255, 0.1);
     }
 
     .badge-invalid {
-      background: rgba(107, 122, 255, .12);
-      color: var(--accent);
-      border: 1px solid rgba(107, 122, 255, .3);
+      background: var(--invalid-bg);
+      color: var(--accent-mid);
+      border: 1px solid rgba(99, 102, 241, 0.2);
     }
 
-    .dot-safe {
-      background: var(--safe);
-      box-shadow: 0 0 6px var(--safe);
+    .badge-safe svg {
+      color: var(--safe);
     }
 
-    .dot-warn {
-      background: var(--warn);
-      box-shadow: 0 0 6px var(--warn);
+    .badge-warn svg {
+      color: var(--warn);
     }
 
-    .dot-danger {
-      background: var(--danger);
-      box-shadow: 0 0 6px var(--danger);
-      animation: pulse 1.2s ease-in-out infinite;
+    .badge-danger svg {
+      color: var(--danger);
     }
 
-    .dot-invalid {
-      background: var(--accent);
-    }
-
-    @keyframes pulse {
-
-      0%,
-      100% {
-        opacity: 1;
-        transform: scale(1);
-      }
-
-      50% {
-        opacity: .6;
-        transform: scale(1.3);
-      }
+    .badge-invalid svg {
+      color: var(--accent-mid);
     }
 
     /* Score ring */
     .score-ring-wrap {
       display: flex;
       align-items: center;
-      gap: 18px;
-      margin-bottom: 20px;
+      gap: 24px;
+      margin-bottom: 28px;
     }
 
     .score-ring {
       position: relative;
-      width: 72px;
-      height: 72px;
+      width: 88px;
+      height: 88px;
       flex-shrink: 0;
+      filter: drop-shadow(0 4px 12px rgba(0, 0, 0, 0.15));
     }
 
     .score-ring svg {
       transform: rotate(-90deg);
-      width: 72px;
-      height: 72px;
+      width: 88px;
+      height: 88px;
     }
 
     .score-ring circle {
       fill: none;
-      stroke-width: 5;
+      stroke-width: 6;
       stroke-linecap: round;
     }
 
     .ring-bg {
       stroke: var(--border);
+      transition: stroke var(--transition);
     }
 
     .ring-fill {
-      stroke-dasharray: 188;
-      stroke-dashoffset: 188;
-      transition: stroke-dashoffset .8s cubic-bezier(.4, 0, .2, 1), stroke .5s;
+      stroke-dasharray: 238;
+      /* 2 * pi * 38 */
+      stroke-dashoffset: 238;
+      transition: stroke-dashoffset 1s cubic-bezier(.16, 1, .3, 1), stroke .5s;
     }
 
     .score-num {
@@ -381,8 +518,8 @@
       display: flex;
       align-items: center;
       justify-content: center;
-      font-size: 1.15rem;
-      font-weight: 700;
+      font-size: 1.4rem;
+      font-weight: 800;
     }
 
     .score-meta {
@@ -390,40 +527,51 @@
     }
 
     .score-label {
-      font-size: .75rem;
+      font-size: .85rem;
       color: var(--muted);
-      font-weight: 600;
+      font-weight: 700;
       text-transform: uppercase;
-      letter-spacing: .08em;
+      letter-spacing: .1em;
+      margin-bottom: 6px;
+      transition: color var(--transition);
     }
 
     .score-value {
-      font-size: 2rem;
-      font-weight: 700;
-      line-height: 1.1;
+      font-size: 2.6rem;
+      font-weight: 800;
+      line-height: 1;
+      color: var(--text);
+      letter-spacing: -.03em;
+      transition: color var(--transition);
     }
 
     /* URL display */
     .url-row {
-      background: var(--surface);
+      background: rgba(0, 0, 0, 0.1);
       border: 1px solid var(--border);
-      border-radius: 8px;
-      padding: 10px 14px;
-      margin-bottom: 18px;
+      border-radius: 12px;
+      padding: 16px 20px;
+      margin-bottom: 28px;
       display: flex;
-      gap: 10px;
+      gap: 14px;
       align-items: flex-start;
+      transition: all var(--transition);
+      box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.05);
+    }
+
+    [data-theme="light"] .url-row {
+      background: rgba(255, 255, 255, 0.4);
     }
 
     .url-tag {
-      font-size: .67rem;
+      font-size: .75rem;
       font-weight: 700;
       text-transform: uppercase;
       letter-spacing: .08em;
-      color: var(--accent);
-      background: rgba(107, 122, 255, .12);
-      padding: 2px 7px;
-      border-radius: 4px;
+      color: var(--accent-mid);
+      background: var(--invalid-bg);
+      padding: 6px 10px;
+      border-radius: 8px;
       white-space: nowrap;
       margin-top: 1px;
       flex-shrink: 0;
@@ -431,87 +579,119 @@
 
     .url-text {
       font-family: 'JetBrains Mono', monospace;
-      font-size: .8rem;
+      font-size: .9rem;
       color: var(--muted);
       word-break: break-all;
-      line-height: 1.5;
+      line-height: 1.6;
+      font-weight: 500;
+      transition: color var(--transition);
     }
 
     /* Reasons */
     .reasons-title {
-      font-size: .78rem;
-      font-weight: 600;
+      font-size: .85rem;
+      font-weight: 700;
       text-transform: uppercase;
-      letter-spacing: .08em;
-      color: var(--muted);
-      margin-bottom: 10px;
+      letter-spacing: .1em;
+      color: var(--text);
+      margin-bottom: 16px;
+      transition: color var(--transition);
     }
 
     .reasons-list {
       list-style: none;
       display: flex;
       flex-direction: column;
-      gap: 8px;
+      gap: 12px;
     }
 
     .reason-item {
       display: flex;
-      align-items: center;
-      gap: 10px;
+      align-items: flex-start;
+      gap: 14px;
       background: var(--surface);
       border: 1px solid var(--border);
-      border-radius: 8px;
-      padding: 10px 14px;
-      font-size: .875rem;
+      border-radius: 12px;
+      padding: 16px 20px;
+      font-size: .95rem;
+      font-weight: 500;
       color: var(--text);
-      animation: fadeIn .3s ease;
+      animation: fadeIn .4s ease both;
+      transition: all var(--transition);
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.02);
+    }
+
+    .reason-item:nth-child(1) {
+      animation-delay: 0.1s;
+    }
+
+    .reason-item:nth-child(2) {
+      animation-delay: 0.15s;
+    }
+
+    .reason-item:nth-child(3) {
+      animation-delay: 0.2s;
+    }
+
+    .reason-item:hover {
+      border-color: var(--border-lit);
+      transform: translateX(4px);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
     }
 
     @keyframes fadeIn {
       from {
         opacity: 0;
+        transform: translateY(10px);
       }
 
       to {
         opacity: 1;
+        transform: translateY(0);
       }
     }
 
     .reason-icon {
-      font-size: .9rem;
+      width: 20px;
+      height: 20px;
       flex-shrink: 0;
+      color: var(--warn);
+      margin-top: 2px;
     }
 
     .no-reasons {
       text-align: center;
       color: var(--muted);
-      font-size: .875rem;
-      padding: 14px;
+      font-size: .95rem;
+      font-weight: 500;
+      padding: 20px;
+      background: var(--surface);
+      border-radius: 12px;
+      border: 1px dashed var(--border);
+      transition: all var(--transition);
     }
 
     /* ── Error Box ──────────────────────────────────────────── */
     #error-box {
       display: none;
-      background: rgba(239, 68, 68, .1);
-      border: 1px solid rgba(239, 68, 68, .3);
-      border-radius: 10px;
-      padding: 14px 18px;
-      color: #fca5a5;
-      font-size: .875rem;
+      background: var(--danger-bg);
+      border: 1px solid rgba(244, 63, 94, .3);
+      border-radius: 12px;
+      padding: 16px 20px;
+      color: var(--danger);
+      font-size: .95rem;
+      font-weight: 600;
       text-align: center;
-      animation: slideUp .3s ease;
+      animation: slideUp .3s cubic-bezier(0.16, 1, 0.3, 1);
+      box-shadow: 0 8px 24px rgba(244, 63, 94, 0.15);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
     }
 
-    /* ── Footer ─────────────────────────────────────────────── */
-    footer {
-      text-align: center;
-      color: var(--muted);
-      font-size: .78rem;
-      margin-top: 8px;
-    }
-
-    footer strong {
-      color: var(--accent);
+    #error-box.hidden {
+      display: none;
     }
 
     /* ── Navbar ──────────────────────────────────────────────── */
@@ -524,67 +704,117 @@
       display: flex;
       align-items: center;
       justify-content: space-between;
-      padding: 12px 24px;
-      background: rgba(11, 13, 20, .85);
-      backdrop-filter: blur(12px);
-      -webkit-backdrop-filter: blur(12px);
+      padding: 16px 32px;
+      background: var(--nav-bg);
+      backdrop-filter: blur(24px);
+      -webkit-backdrop-filter: blur(24px);
       border-bottom: 1px solid var(--border);
+      transition: all var(--transition);
+      box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
     }
 
     .navbar-brand {
       display: flex;
       align-items: center;
-      gap: 8px;
-      font-weight: 700;
-      font-size: .9rem;
+      gap: 12px;
+      font-weight: 800;
+      font-size: 1.1rem;
       color: var(--text);
+      text-decoration: none;
+      transition: color var(--transition);
+      letter-spacing: -.02em;
+    }
+
+    .navbar-brand svg {
+      width: 24px;
+      height: 24px;
+      color: var(--accent-mid);
     }
 
     .navbar-brand span {
-      color: var(--accent);
+      background: linear-gradient(135deg, var(--accent-mid), var(--accent-dark));
+
+      -webkit-background-clip: text;
+      background-clip: text;
+
+      -webkit-text-fill-color: transparent;
+      color: transparent;
     }
 
     .navbar-right {
       display: flex;
       align-items: center;
-      gap: 12px;
+      gap: 16px;
     }
 
     .navbar-user {
-      font-size: .8rem;
+      font-size: .9rem;
+      font-weight: 500;
       color: var(--muted);
+      transition: color var(--transition);
     }
 
     .navbar-user strong {
       color: var(--text);
+      transition: color var(--transition);
+      font-weight: 700;
     }
 
-    .btn-logout {
-      background: transparent;
-      border: 1px solid var(--border-lit);
-      border-radius: 7px;
+    .btn-nav-action {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 10px;
       color: var(--muted);
       font-family: 'Inter', sans-serif;
-      font-size: .78rem;
+      font-size: .85rem;
       font-weight: 600;
-      padding: 6px 14px;
+      padding: 10px 18px;
       cursor: pointer;
-      transition: border-color var(--transition), color var(--transition), background var(--transition);
+      transition: all var(--transition);
       text-decoration: none;
       display: inline-flex;
       align-items: center;
-      gap: 6px;
+      gap: 8px;
     }
 
-    .btn-logout:hover {
+    .btn-nav-action svg {
+      width: 16px;
+      height: 16px;
+    }
+
+    .btn-nav-action:hover {
       border-color: var(--danger);
-      color: #fca5a5;
-      background: rgba(239, 68, 68, .08);
+      color: var(--danger);
+      background: var(--danger-bg);
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(244, 63, 94, 0.1);
     }
 
-    /* Offset body content so navbar doesn't cover it */
-    body {
-      padding-top: 80px;
+    .btn-theme {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      color: var(--text);
+      width: 40px;
+      height: 40px;
+      cursor: pointer;
+      transition: all var(--transition);
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+    }
+
+    .btn-theme svg {
+      width: 20px;
+      height: 20px;
+    }
+
+    .btn-theme:hover {
+      border-color: var(--accent-mid);
+      background: var(--invalid-bg);
+      transform: translateY(-2px);
+      color: var(--accent-mid);
     }
 
     /* ── History Card ─────────────────────────────────────── */
@@ -592,106 +822,106 @@
       display: flex;
       align-items: center;
       justify-content: space-between;
-      font-size: .78rem;
-      font-weight: 600;
+      font-size: .85rem;
+      font-weight: 700;
       text-transform: uppercase;
-      letter-spacing: .08em;
-      color: var(--muted);
-      margin-bottom: 12px;
+      letter-spacing: .1em;
+      color: var(--text);
+      margin-bottom: 20px;
+      transition: color var(--transition);
     }
 
     .history-count {
       background: var(--surface);
       border: 1px solid var(--border);
       border-radius: 100px;
-      padding: 2px 9px;
-      font-size: .7rem;
-      color: var(--accent);
-      font-weight: 700;
+      padding: 4px 12px;
+      font-size: .8rem;
+      color: var(--accent-mid);
+      font-weight: 800;
+      transition: all var(--transition);
     }
 
     .history-list {
       display: flex;
       flex-direction: column;
-      gap: 8px;
+      gap: 12px;
     }
 
     .history-item {
       display: grid;
       grid-template-columns: 1fr auto auto;
       align-items: center;
-      gap: 10px;
+      gap: 16px;
       background: var(--surface);
       border: 1px solid var(--border);
-      border-radius: 8px;
-      padding: 10px 14px;
-      transition: border-color var(--transition);
-      animation: fadeIn .3s ease;
+      border-radius: 12px;
+      padding: 14px 20px;
+      transition: all var(--transition);
+      animation: fadeIn .4s ease both;
     }
 
     .history-item:hover {
       border-color: var(--border-lit);
+      transform: translateX(4px);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
     }
 
     .history-url {
       font-family: 'JetBrains Mono', monospace;
-      font-size: .78rem;
+      font-size: .9rem;
       color: var(--muted);
       white-space: nowrap;
       overflow: hidden;
       text-overflow: ellipsis;
       min-width: 0;
+      font-weight: 500;
+      transition: color var(--transition);
     }
 
     .history-pill {
-      font-size: .68rem;
+      font-size: .75rem;
       font-weight: 700;
       text-transform: uppercase;
-      letter-spacing: .05em;
-      padding: 3px 9px;
+      letter-spacing: .08em;
+      padding: 6px 12px;
       border-radius: 100px;
       white-space: nowrap;
       flex-shrink: 0;
-    }
-
-    .pill-safe {
-      background: var(--safe-bg);
-      color: var(--safe);
-      border: 1px solid rgba(34, 197, 94, .25);
-    }
-
-    .pill-warn {
-      background: var(--warn-bg);
-      color: var(--warn);
-      border: 1px solid rgba(245, 158, 11, .25);
-    }
-
-    .pill-danger {
-      background: var(--danger-bg);
-      color: var(--danger);
-      border: 1px solid rgba(239, 68, 68, .25);
-    }
-
-    .pill-invalid {
-      background: rgba(107, 122, 255, .12);
-      color: var(--accent);
-      border: 1px solid rgba(107, 122, 255, .25);
+      transition: all var(--transition);
     }
 
     .history-score {
-      font-size: .78rem;
-      font-weight: 700;
+      font-size: .95rem;
+      font-weight: 800;
       color: var(--text);
       flex-shrink: 0;
       min-width: 36px;
       text-align: right;
+      transition: color var(--transition);
     }
 
     .history-empty {
       text-align: center;
       color: var(--muted);
-      font-size: .85rem;
-      padding: 20px 0;
+      font-size: .95rem;
+      font-weight: 500;
+      padding: 32px 0;
+      transition: color var(--transition);
+    }
+
+    /* ── Footer ─────────────────────────────────────────────── */
+    footer {
+      text-align: center;
+      color: var(--muted);
+      font-size: .9rem;
+      font-weight: 500;
+      margin-top: 16px;
+      transition: color var(--transition);
+    }
+
+    footer strong {
+      color: var(--accent-mid);
     }
 
     /* ── Responsive ─────────────────────────────────────────── */
@@ -703,7 +933,6 @@
       #analyze-btn {
         width: 100%;
         justify-content: center;
-        display: flex;
       }
 
       .navbar-user {
@@ -711,8 +940,29 @@
       }
 
       .history-url {
-        max-width: 160px;
+        max-width: 140px;
       }
+
+      .card {
+        padding: 24px;
+      }
+
+      .navbar {
+        padding: 14px 20px;
+      }
+    }
+
+
+    .text-safe {
+      color: var(--safe);
+    }
+
+    .text-warn {
+      color: var(--warn);
+    }
+
+    .text-danger {
+      color: var(--danger);
     }
   </style>
 </head>
@@ -721,12 +971,42 @@
 
   <!-- ── Navbar ─── -->
   <nav class="navbar">
-    <div class="navbar-brand">
-      🛡️ <span>Phishing</span> Analyzer
-    </div>
+    <a href="/" class="navbar-brand">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"
+        stroke-linecap="round" stroke-linejoin="round">
+        <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
+      </svg>
+      <span>Phishing</span> Analyzer
+    </a>
     <div class="navbar-right">
       <span class="navbar-user">Hello, <strong>{{ username }}</strong></span>
-      <a href="/logout" class="btn-logout" id="logout-btn">⎋ Logout</a>
+      <button id="theme-toggle" class="btn-theme" aria-label="Toggle Theme">
+        <svg class="icon-sun" style="display:none;" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none"
+          stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="12" cy="12" r="5" />
+          <line x1="12" y1="1" x2="12" y2="3" />
+          <line x1="12" y1="21" x2="12" y2="23" />
+          <line x1="4.22" y1="4.22" x2="5.64" y2="5.64" />
+          <line x1="18.36" y1="18.36" x2="19.78" y2="19.78" />
+          <line x1="1" y1="12" x2="3" y2="12" />
+          <line x1="21" y1="12" x2="23" y2="12" />
+          <line x1="4.22" y1="19.78" x2="5.64" y2="18.36" />
+          <line x1="18.36" y1="5.64" x2="19.78" y2="4.22" />
+        </svg>
+        <svg class="icon-moon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+          stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z" />
+        </svg>
+      </button>
+      <a href="/logout" class="btn-nav-action" id="logout-btn">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+          stroke-linecap="round" stroke-linejoin="round">
+          <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" />
+          <polyline points="16 17 21 12 16 7" />
+          <line x1="21" y1="12" x2="9" y2="12" />
+        </svg>
+        Logout
+      </a>
     </div>
   </nav>
 
@@ -734,7 +1014,16 @@
 
     <!-- ── Header ─── -->
     <header>
-      <span class="shield-icon">🛡️</span>
+      <svg class="shield-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="url(#shieldGrad)"
+        stroke="rgba(255,255,255,0.3)" stroke-width="1" stroke-linecap="round" stroke-linejoin="round">
+        <defs>
+          <linearGradient id="shieldGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" stop-color="var(--accent-mid)" />
+            <stop offset="100%" stop-color="var(--accent-alt, #3b82f6)" />
+          </linearGradient>
+        </defs>
+        <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
+      </svg>
       <h1>Phishing URL <span>Detection</span> &amp; Risk Analysis Tool</h1>
       <p class="desc">
         Paste any URL below to instantly analyze it for phishing signals.
@@ -745,20 +1034,32 @@
 
     <!-- ── Input Card ─── -->
     <div class="card">
-      <label for="url-input" class="input-label">🔗 Enter URL to Analyze</label>
+      <label for="url-input" class="input-label">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+          stroke-linecap="round" stroke-linejoin="round">
+          <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71" />
+          <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71" />
+        </svg>
+        Enter URL to Analyze
+      </label>
       <div class="input-row">
         <input id="url-input" type="text" placeholder="https://example.com/login" autocomplete="off"
           spellcheck="false" />
 
         <button id="analyze-btn">
           <span class="spinner"></span>
-          <span class="btn-text">Analyze →</span>
+          <span class="btn-text">Analyze</span>
+          <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none"
+            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <line x1="5" y1="12" x2="19" y2="12" />
+            <polyline points="12 5 19 12 12 19" />
+          </svg>
         </button>
       </div>
     </div>
 
     <!-- ── Error Box ─── -->
-    <div id="error-box"></div>
+    <div id="error-box" class="hidden"></div>
 
     <!-- ── Result Card ─── -->
     <div id="result-card" class="card">
@@ -766,7 +1067,8 @@
       <!-- Status badge -->
       <div class="result-header">
         <div id="status-badge" class="status-badge">
-          <div id="status-dot" class="status-dot"></div>
+          <svg id="status-icon" class="status-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none"
+            stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"></svg>
           <span id="status-text">—</span>
         </div>
       </div>
@@ -774,262 +1076,391 @@
       <!-- Score ring + label -->
       <div class="score-ring-wrap">
         <div class="score-ring">
-          <svg viewBox="0 0 72 72">
-            <circle class="ring-bg" cx="36" cy="36" r="30" />
-            <circle class="ring-fill" id="ring-fill" cx="36" cy="36" r="30" />
+          <svg viewBox="0 0 80 80">
+            <circle class="ring-bg" cx="40" cy="40" r="38" />
+            <circle class="ring-fill" id="ring-fill" cx="40" cy="40" r="38" />
           </svg>
           <div class="score-num" id="ring-num">0</div>
         </div>
         <div class="score-meta">
           <div class="score-label">Risk Score</div>
           <div class="score-value" id="score-display">0 <span
-              style="font-size:1rem;color:var(--muted);font-weight:400">/ 100</span></div>
+              style="font-size:1.4rem;color:var(--muted);font-weight:600">/ 100</span></div>
         </div>
       </div>
 
-      <!-- Expanded URL -->
+      <!-- Analyzed URL -->
       <div class="url-row">
-        <span class="url-tag">URL</span>
-        <span class="url-text" id="expanded-url-display">—</span>
+        <div class="url-tag">Target</div>
+        <div class="url-text" id="url-display">—</div>
       </div>
 
-      <!-- Reasons -->
-      <div class="reasons-title">⚠️ Detection Signals</div>
-      <ul class="reasons-list" id="reasons-list"></ul>
+      <!-- Reasons list -->
+      <div class="reasons-title">Detection Signals</div>
+      <ul class="reasons-list" id="reasons-list">
+        <!-- populated via js -->
+      </ul>
 
-      <!-- 🔥 Suggested Official Website -->
-      <div id="suggestion-box" style="
-  display:none;
-  margin-top: 16px;
-  padding: 14px;
-  border-radius: 10px;
-  background: rgba(34,197,94,.1);
-  border: 1px solid rgba(34,197,94,.3);
-  color: #22c55e;
-  font-size: .9rem;
-">
-        🔗 Suggested Official Website:
-        <br>
-        <a id="suggested-link" href="#" target="_blank" style="color:#4ade80; font-weight:600;">
-          —
-        </a>
+      <!-- Suggested Official URL -->
+      <div id="suggested-url-wrap"
+        style="display:none; margin-top: 20px; padding: 16px; background: rgba(16, 185, 129, 0.1); border: 1px solid rgba(16, 185, 129, 0.3); border-radius: 12px;">
+        <div
+          style="font-size: 0.8rem; font-weight: 700; color: var(--safe); text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 6px;">
+          <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none"
+            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+            style="vertical-align: text-bottom;">
+            <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14" />
+            <polyline points="22 4 12 14.01 9 11.01" />
+          </svg>
+          Official Website
+        </div>
+        <a id="suggested-url-link" href="#" target="_blank" rel="noopener noreferrer"
+          style="color: var(--text); font-weight: 600; text-decoration: none;"></a>
       </div>
-
     </div>
 
     <!-- ── History Card ─── -->
-    <div class="card" id="history-card">
+    <div class="card" id="history-card" style="padding: 28px 36px;">
       <div class="history-title">
-        📜 Recent Scans
-        <span class="history-count" id="history-count">0</span>
+        Scan History
+        <span class="history-count" id="history-count">{{ history|length }}</span>
       </div>
-      <div class="history-list" id="history-list">
-        <p class="history-empty">No scans yet. Analyze a URL to see history.</p>
+
+      <div id="history-list-container">
+        {% if history %}
+        <div class="history-list">
+          {% for item in history %}
+          <div class="history-item">
+            <div class="history-url" title="{{ item.url }}">{{ item.url }}</div>
+            <div
+              class="history-pill 
+            {% if item.status == 'Safe' %}badge-safe{% elif item.status == 'Suspicious' %}badge-warn{% else %}badge-danger{% endif %}">
+              {{ item.status }}
+            </div>
+            <div class="history-score
+  {% if item.status == 'Safe' %}text-safe
+  {% elif item.status == 'Suspicious' %}text-warn
+  {% else %}text-danger
+  {% endif %}">
+              {{ item.score }}
+            </div>
+          </div>
+          {% endfor %}
+        </div>
+        {% else %}
+        <div class="history-empty">
+          No URLs analyzed yet.
+        </div>
+        {% endif %}
       </div>
     </div>
 
     <!-- ── Footer ─── -->
     <footer>
-      <strong>Phishing URL Analyzer</strong> — College Mini Project &nbsp;·&nbsp;
-      Powered by Python + Flask
+      <strong>Phishing URL Analyzer</strong> — College Mini Project
     </footer>
 
   </div>
 
   <script>
-    window.INIT_HISTORY = JSON.parse('{{ history | tojson | safe }}');
-  </script>
-
-  <!-- ── JavaScript ─────────────────────────────────────────── -->
-  <script>
-    /* ── Allow Enter-key submission ───────────────────── */
-    document.getElementById('url-input').addEventListener('keydown', function (e) {
-      if (e.key === 'Enter') {
-        e.preventDefault();
-        analyzeURL();
+    document.addEventListener("DOMContentLoaded", () => {
+      /* ---------------- Theme Toggle ---------------- */
+      function initTheme() {
+        const theme = document.documentElement.getAttribute("data-theme") || "dark";
+        updateThemeIcon(theme);
       }
-    });
 
-    /* ── Color config per status ──────────────────────── */
-    const STATUS_CONFIG = {
-      'Safe': { badge: 'badge-safe', dot: 'dot-safe', color: '#22c55e', emoji: '✅' },
-      'Suspicious': { badge: 'badge-warn', dot: 'dot-warn', color: '#f59e0b', emoji: '⚠️' },
-      'Dangerous': { badge: 'badge-danger', dot: 'dot-danger', color: '#ef4444', emoji: '🚨' },
-      'Invalid URL': { badge: 'badge-invalid', dot: 'dot-invalid', color: '#6b7aff', emoji: 'ℹ️' },
-    };
+      function toggleTheme() {
+        const currentTheme = document.documentElement.getAttribute("data-theme") || "dark";
+        const newTheme = currentTheme === "dark" ? "light" : "dark";
+        document.documentElement.setAttribute("data-theme", newTheme);
+        localStorage.setItem("theme", newTheme);
+        updateThemeIcon(newTheme);
+      }
 
-    /* ── Main analysis function ───────────────────────── */
-    async function analyzeURL() {
-      const input = document.getElementById('url-input');
-      const btn = document.getElementById('analyze-btn');
-      const url = input.value.trim();
+      function updateThemeIcon(theme) {
+        const sun = document.querySelector(".icon-sun");
+        const moon = document.querySelector(".icon-moon");
+        if (!sun || !moon) return;
 
-      // Hide previous results
-      hide('result-card');
-      hide('error-box');
+        if (theme === "dark") {
+          sun.style.display = "inline";
+          moon.style.display = "none";
+        } else {
+          sun.style.display = "none";
+          moon.style.display = "inline";
+        }
+      }
 
-      if (!url) {
-        showError('Please enter a URL first.');
-        input.focus();
+      const themeToggle = document.getElementById("theme-toggle");
+      if (themeToggle) {
+        themeToggle.addEventListener("click", toggleTheme);
+      }
+      initTheme();
+
+      /* ---------------- Elements ---------------- */
+      const analyzeBtn = document.getElementById("analyze-btn");
+      const urlInput = document.getElementById("url-input");
+      const resultCard = document.getElementById("result-card");
+      const errorBox = document.getElementById("error-box");
+
+      const statusBadge = document.getElementById("status-badge");
+      const statusIcon = document.getElementById("status-icon");
+      const statusText = document.getElementById("status-text");
+      const ringFill = document.getElementById("ring-fill");
+      const ringNum = document.getElementById("ring-num");
+      const scoreDisplay = document.getElementById("score-display");
+      const urlDisplay = document.getElementById("url-display");
+      const reasonsList = document.getElementById("reasons-list");
+
+      const suggestedWrap = document.getElementById("suggested-url-wrap");
+      const suggestedLink = document.getElementById("suggested-url-link");
+
+      const historyCount = document.getElementById("history-count");
+      const historyListContainer = document.getElementById("history-list-container");
+
+      if (!analyzeBtn || !urlInput) {
+        console.error("Missing analyze button or URL input.");
         return;
       }
 
-      // Show loading state
-      btn.classList.add('loading');
-      btn.disabled = true;
+      /* ---------------- Status SVGs ---------------- */
+      const svgSafe = '<path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/>';
+      const svgWarn = '<path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/>';
+      const svgDanger = '<circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/>';
 
-      try {
-        const response = await fetch('/analyze', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ url })
-        });
+      /* ---------------- Helpers ---------------- */
+      function showError(message) {
+        if (!errorBox) {
+          alert(message);
+          return;
+        }
+        errorBox.textContent = message;
+        errorBox.style.display = "flex";
+        errorBox.classList.remove("hidden");
+      }
 
-        const data = await response.json();
+      function hideError() {
+        if (!errorBox) return;
+        errorBox.textContent = "";
+        errorBox.style.display = "none";
+        errorBox.classList.add("hidden");
+      }
 
-        if (!response.ok) {
-          showError(data.error || 'Something went wrong. Please try again.');
+      function setLoading(isLoading) {
+        analyzeBtn.disabled = isLoading;
+        analyzeBtn.classList.toggle("loading", isLoading);
+      }
+
+      function escapeHTML(str) {
+        if (!str) return "";
+        return String(str).replace(/[&<>'"]/g, (tag) => ({
+          "&": "&amp;",
+          "<": "&lt;",
+          ">": "&gt;",
+          "'": "&#39;",
+          '"': "&quot;"
+        }[tag] || tag));
+      }
+
+      function setStatusUI(status) {
+        if (!statusBadge || !statusIcon || !statusText) return;
+
+        statusBadge.className = "status-badge";
+        statusIcon.innerHTML = "";
+
+        if (status === "Safe") {
+          statusBadge.classList.add("badge-safe");
+          statusIcon.innerHTML = svgSafe;
+        } else if (status === "Suspicious") {
+          statusBadge.classList.add("badge-warn");
+          statusIcon.innerHTML = svgWarn;
+        } else {
+          statusBadge.classList.add("badge-danger");
+          statusIcon.innerHTML = svgDanger;
+        }
+
+        statusText.textContent = status || "-";
+      }
+
+      function animateScore(targetScore) {
+        const score = Number(targetScore) || 0;
+        const duration = 900;
+        const start = performance.now();
+        const maxOffset = 238;
+
+        if (ringFill) {
+          ringFill.style.strokeDashoffset = maxOffset;
+        }
+
+        function tick(now) {
+          const progress = Math.min((now - start) / duration, 1);
+          const eased = 1 - Math.pow(1 - progress, 4);
+          const current = Math.floor(eased * score);
+
+          if (ringNum) ringNum.textContent = String(current);
+          if (scoreDisplay) {
+            scoreDisplay.innerHTML = `${current} <span style="font-size:1.4rem;color:var(--muted);font-weight:600">/ 100</span>`;
+          }
+
+          if (progress < 1) {
+            requestAnimationFrame(tick);
+          } else {
+            if (ringNum) ringNum.textContent = String(score);
+            if (scoreDisplay) {
+              scoreDisplay.innerHTML = `${score} <span style="font-size:1.4rem;color:var(--muted);font-weight:600">/ 100</span>`;
+            }
+          }
+        }
+
+        requestAnimationFrame(tick);
+
+        if (ringFill) {
+          const offset = maxOffset - (score / 100) * maxOffset;
+          setTimeout(() => {
+            ringFill.style.strokeDashoffset = offset;
+          }, 50);
+        }
+      }
+
+      function renderResult(originalUrl, data) {
+        if (urlDisplay) urlDisplay.textContent = originalUrl || "-";
+        setStatusUI(data.status);
+        animateScore(data.score);
+
+        if (reasonsList) {
+          reasonsList.innerHTML = "";
+          const reasons = Array.isArray(data.reasons) ? data.reasons : [];
+          if (reasons.length > 0) {
+            reasons.forEach((reason) => {
+              const li = document.createElement("li");
+              li.className = "reason-item";
+              li.innerHTML = `
+            <svg class="reason-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/>
+              <line x1="12" y1="9" x2="12" y2="13"/>
+              <line x1="12" y1="17" x2="12.01" y2="17"/>
+            </svg>
+            <span>${escapeHTML(reason)}</span>
+          `;
+              reasonsList.appendChild(li);
+            });
+          } else {
+            reasonsList.innerHTML = '<li class="no-reasons">No suspicious signals detected.</li>';
+          }
+        }
+
+        if (suggestedWrap && suggestedLink) {
+          if (data.suggested_url) {
+            suggestedLink.href = data.suggested_url;
+            suggestedLink.textContent = data.suggested_url;
+            suggestedWrap.style.display = "block";
+          } else {
+            suggestedWrap.style.display = "none";
+          }
+        }
+
+        if (resultCard) resultCard.style.display = "block";
+      }
+
+      async function loadHistory() {
+        try {
+          const response = await fetch("/history");
+          if (!response.ok) return;
+
+          const historyData = await response.json();
+
+          if (historyCount) {
+            historyCount.textContent = String(historyData.length);
+          }
+
+          if (!historyListContainer) return;
+
+          if (!Array.isArray(historyData) || historyData.length === 0) {
+            historyListContainer.innerHTML = '<div class="history-empty">No URLs analyzed yet.</div>';
+            return;
+          }
+
+          let html = '<div class="history-list">';
+          historyData.forEach((item) => {
+            let badgeClass = "badge-safe";
+            let colorVar = "safe";
+
+            if (item.status === "Suspicious") {
+              badgeClass = "badge-warn";
+              colorVar = "warn";
+            } else if (item.status === "Dangerous") {
+              badgeClass = "badge-danger";
+              colorVar = "danger";
+            }
+
+            html += `
+          <div class="history-item">
+            <div class="history-url" title="${escapeHTML(item.url)}">${escapeHTML(item.url)}</div>
+            <div class="history-pill ${badgeClass}">${escapeHTML(item.status)}</div>
+            <div class="history-score" style="color: var(--${colorVar})">${escapeHTML(item.score)}</div>
+          </div>
+        `;
+          });
+          html += "</div>";
+          historyListContainer.innerHTML = html;
+        } catch (e) {
+          console.error("Failed to load history", e);
+        }
+      }
+
+      async function analyzeURL() {
+        const url = urlInput.value.trim();
+        if (!url) {
+          showError("Enter a URL.");
           return;
         }
 
-        renderResult(data);
+        setLoading(true);
+        hideError();
+        if (resultCard) resultCard.style.display = "none";
 
-      } catch (err) {
-        showError('Could not connect to the server. Make sure Flask is running.');
-      } finally {
-        btn.classList.remove('loading');
-        btn.disabled = false;
-      }
-    }
+        try {
+          const response = await fetch("/analyze", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ url })
+          });
 
-    /* ── Render result into the card ─────────────────── */
-    function renderResult(data) {
-      const status = data.status || 'Safe';
-      const score = data.score || 0;
-      const cfg = STATUS_CONFIG[status] || STATUS_CONFIG['Safe'];
+          const rawText = await response.text();
+          let data;
 
-      /* Status badge */
-      const badge = document.getElementById('status-badge');
-      const dot = document.getElementById('status-dot');
-      badge.className = `status-badge ${cfg.badge}`;
-      dot.className = `status-dot ${cfg.dot}`;
-      document.getElementById('status-text').textContent = `${cfg.emoji}  ${status}`;
+          try {
+            data = JSON.parse(rawText);
+          } catch {
+            throw new Error("Server returned invalid JSON.");
+          }
 
-      /* Score ring */
-      const circumference = 2 * Math.PI * 30;
-      const offset = circumference - (score / 100) * circumference;
-      const ring = document.getElementById('ring-fill');
-      ring.style.stroke = cfg.color;
-      ring.style.strokeDashoffset = offset;
+          if (!response.ok) {
+            throw new Error(data.error || "Failed to analyze URL.");
+          }
 
-      document.getElementById('ring-num').textContent = score;
-      document.getElementById('ring-num').style.color = cfg.color;
-      document.getElementById('score-display').innerHTML =
-        `${score} <span style="font-size:1rem;color:var(--muted);font-weight:400">/ 100</span>`;
-
-      /* URL */
-      document.getElementById('expanded-url-display').textContent =
-        data.expanded_url || data.original_url || '';
-
-      /* Reasons */
-      const list = document.getElementById('reasons-list');
-      list.innerHTML = '';
-
-      const reasons = data.reasons || [];
-
-      if (reasons.length === 0) {
-        list.innerHTML = '<p class="no-reasons">No specific signals detected.</p>';
-      } else {
-        reasons.forEach((reason, i) => {
-          const li = document.createElement('li');
-          li.className = 'reason-item';
-          li.style.animationDelay = `${i * 60}ms`;
-          li.innerHTML = `<span class="reason-icon">⚡</span>${escapeHTML(reason)}`;
-          list.appendChild(li);
-        });
+          renderResult(url, data);
+          loadHistory();
+        } catch (err) {
+          console.error(err);
+          showError(err.message || "Something went wrong.");
+        } finally {
+          setLoading(false);
+        }
       }
 
-      // ✅ 🔥 CORRECT PLACE (OUTSIDE IF-ELSE)
-      const suggestionBox = document.getElementById('suggestion-box');
-      const suggestedLink = document.getElementById('suggested-link');
+      /* ---------------- Events ---------------- */
+      analyzeBtn.addEventListener("click", analyzeURL);
+      urlInput.addEventListener("keydown", (e) => {
+        if (e.key === "Enter") analyzeURL();
+      });
 
-      if (data.suggested_url) {
-        suggestionBox.style.display = 'block';
-        suggestedLink.href = data.suggested_url;
-        suggestedLink.textContent = data.suggested_url;
-      } else {
-        suggestionBox.style.display = 'none';
-      }
-
-      // ✅ SHOW RESULT CARD
-      const card = document.getElementById('result-card');
-      card.style.display = 'block';
-
-      // ✅ Refresh history
+      /* ---------------- Initial Load ---------------- */
       loadHistory();
-    }
-
-
-
-
-    /* ── History ──────────────────────────────────────── */
-    const PILL_CLASS = {
-      'Safe': 'pill-safe',
-      'Suspicious': 'pill-warn',
-      'Dangerous': 'pill-danger',
-      'Invalid URL': 'pill-invalid',
-    };
-
-    function renderHistory(items) {
-      const list = document.getElementById('history-list');
-      const count = document.getElementById('history-count');
-      count.textContent = items.length;
-
-      if (!items || items.length === 0) {
-        list.innerHTML = '<p class="history-empty">No scans yet. Analyze a URL to see history.</p>';
-        return;
-      }
-
-      list.innerHTML = items.map(item => {
-        const pill = PILL_CLASS[item.status] || 'pill-invalid';
-        const short = item.url.length > 55 ? item.url.slice(0, 52) + '…' : item.url;
-        return `
-        <div class="history-item">
-          <span class="history-url" title="${escapeHTML(item.url)}">${escapeHTML(short)}</span>
-          <span class="history-pill ${pill}">${escapeHTML(item.status)}</span>
-          <span class="history-score">${item.score}</span>
-        </div>`;
-      }).join('');
-    }
-
-    async function loadHistory() {
-      try {
-        const res = await fetch('/history');
-        const data = await res.json();
-        renderHistory(data);
-      } catch (_) { /* silent — history is non-critical */ }
-    }
-
-    /* ── Seed history from server on page load ────────── */
-    renderHistory(window.INIT_HISTORY || []);
-    /* ── Helpers ──────────────────────────────────────── */
-    function showError(msg) {
-      const box = document.getElementById('error-box');
-      box.textContent = `⚠️  ${msg}`;
-      box.style.display = 'block';
-    }
-
-    function hide(id) {
-      document.getElementById(id).style.display = 'none';
-    }
-
-    function escapeHTML(str) {
-      return str.replace(/[&<>"']/g, c =>
-        ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
-    }
-
-    document.getElementById('analyze-btn').addEventListener('click', analyzeURL);
+    });
   </script>
+
 </body>
 
 </html>
