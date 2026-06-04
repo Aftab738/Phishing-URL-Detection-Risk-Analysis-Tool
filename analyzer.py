@@ -52,7 +52,7 @@ class PhishingAnalyzer:
             return url
 
     def normalize(self, text):
-        for a, b in [('0','o'), ('1','l'), ('3','e'), ('5','s')]:
+        for a, b in [('0', 'o'), ('1', 'l'), ('3', 'e'), ('5', 's')]:
             text = text.replace(a, b)
         return text
 
@@ -103,50 +103,58 @@ class PhishingAnalyzer:
         # 🔹 Keywords
         keyword_hits = [k for k in self.suspicious_keywords if k in raw_url]
         if keyword_hits:
-            score += 15 if len(keyword_hits) == 1 else 25
+            score += 20 if len(keyword_hits) == 1 else 30
             reasons.add("Suspicious keywords detected")
 
         # 🔹 Repeated characters
-        if re.search(r'(.)\1{2,}', domain):
-            score += 15
+        if re.search(r'(.)\1{2,}', base):
+            score += 30
             reasons.add("Unusual repeated characters")
 
         # 🔴 Brand detection
         for brand in self.brands:
-            if brand in normalized_base:
+
+            if brand in normalized_base or normalized_base in brand:
+
+                # Suggest official site immediately
+                result['suggested_url'] = self.official_sites.get(brand)
 
                 legit_domain = f"{brand}.com"
 
+                # Skip legitimate domains
                 if domain == legit_domain:
-                    continue
+                    break
 
-                # substitution (strong signal)
+                # Character substitution / impersonation
                 if brand != base:
                     score += 35
                     is_critical = True
-                    reasons.add(f"Character substitution impersonation ({brand})")
-
+                    reasons.add(
+                        f"Character substitution impersonation ({brand})"
+                    )
                 else:
                     score += 20
-                    reasons.add(f"Possible brand impersonation ({brand})")
+                    reasons.add(
+                        f"Possible brand impersonation ({brand})"
+                    )
 
-                result['suggested_url'] = self.official_sites.get(brand)
-
-                # brand + keyword combo
+                # Brand + keyword combo
                 if keyword_hits:
                     score += 20
                     is_critical = True
-                    reasons.add(f"Brand + keyword phishing pattern ({brand})")
+                    reasons.add(
+                        f"Brand + keyword phishing pattern ({brand})"
+                    )
 
                 break
 
-        # 🔧 SOFT CAP to avoid unrealistic 100
+        # 🔧 Score cap
         if not is_critical:
             score = min(score, 85)
         else:
             score = min(score, 100)
 
-        # 🔴 FINAL CLASSIFICATION
+        # 🔴 Final classification
         if is_critical or score >= 75:
             status = "Dangerous"
         elif score >= 30:
