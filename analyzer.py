@@ -80,6 +80,19 @@ class PhishingAnalyzer:
         normalized = self.normalize(domain)
         normalized_base = normalized.split('.')[0]
 
+        # Alternative normalization for 1 -> i (for cases like 1nstagram)
+        normalized_i = domain.replace('1', 'i')
+        normalized_i = self.normalize(normalized_i)
+        normalized_i_base = normalized_i.split('.')[0]
+
+        print("URL:", url)
+        print("Expanded:", expanded)
+        print("Domain:", domain)
+        print("Base:", base)
+        print("Normalized:", normalized_base)
+        print("Normalized_i:", normalized_i_base)
+        print("-" * 40)
+
         score = 0
         reasons = set()
         is_critical = False
@@ -114,7 +127,12 @@ class PhishingAnalyzer:
         # 🔴 Brand detection
         for brand in self.brands:
 
-            if brand in normalized_base or normalized_base in brand:
+            if (
+                brand in normalized_base
+                or brand in normalized_i_base
+                or normalized_base == brand
+                or normalized_i_base == brand
+            ):
 
                 # Suggest official site immediately
                 result['suggested_url'] = self.official_sites.get(brand)
