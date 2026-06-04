@@ -124,6 +124,10 @@ class PhishingAnalyzer:
             score += 30
             reasons.add("Unusual repeated characters")
 
+        if re.search(r'[^a-zA-Z0-9\-]', base):
+            score += 35
+            reasons.add("Contains unusual special characters")
+
         # 🔴 Brand detection
         for brand in self.brands:
 
